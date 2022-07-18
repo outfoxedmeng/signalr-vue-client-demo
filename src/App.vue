@@ -1,33 +1,42 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld :msg="msg" />
+    <ul>
+      <li v-for="(msg, index) in messges_received" :key="index">{{ msg }}</li>
+    </ul>
+    <input v-model="msg_to_send" type="text" />
+    <button v-on:click="sendMsg">Send</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
 import * as signalR from "@microsoft/signalr";
 export default {
   name: "App",
-  components: {
-    HelloWorld,
-  },
+  components: {},
   data() {
     return {
-      msg: "",
+      messges_received: [],
+      connection: Object,
+      msg_to_send: "",
     };
   },
   mounted() {
     const thisVue = this;
-    const connection = new signalR.HubConnectionBuilder()
+    this.connection = new signalR.HubConnectionBuilder()
       .withUrl("http://localhost:5232/msg-hub")
       .build();
 
-    connection.on("ReceiveMsg", (msg) => {
-      thisVue.msg = msg;
+    this.connection.on("ReceiveMsg", (msg) => {
+      thisVue.messges_received.push(msg);
     });
-    connection.start();
+    this.connection.start();
+  },
+  methods: {
+    sendMsg() {
+      this.connection.invoke("BroadcastMsg", this.msg_to_send);
+      this.msg_to_send = "";
+    },
   },
 };
 </script>
