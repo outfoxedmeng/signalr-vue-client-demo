@@ -2,9 +2,9 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
     <ul>
-      <li v-for="(msg, index) in messges_received" :key="index">{{ msg }}</li>
+      <li v-for="(msg, index) in messgesReceived" :key="index">{{ msg }}</li>
     </ul>
-    <input v-model="msg_to_send" type="text" />
+    <input v-model="msgToSend" type="text" />
     <button v-on:click="sendMsg">Send</button>
   </div>
 </template>
@@ -16,9 +16,9 @@ export default {
   components: {},
   data() {
     return {
-      messges_received: [],
+      messgesReceived: [],
       connection: Object,
-      msg_to_send: "",
+      msgToSend: "",
     };
   },
   mounted() {
@@ -28,14 +28,14 @@ export default {
       .build();
 
     this.connection.on("ReceiveMsg", (msg) => {
-      thisVue.messges_received.push(msg);
+      thisVue.messgesReceived.push(msg);
     });
     this.connection.start();
   },
   methods: {
     sendMsg() {
-      this.connection.invoke("BroadcastMsg", this.msg_to_send);
-      this.msg_to_send = "";
+      this.connection.invoke("BroadcastMsg", this.msgToSend);
+      this.msgToSend = "";
     },
   },
 };
